@@ -1,30 +1,30 @@
-This lab is to demo UTS namespace
+This lab shows how to create a UTS namespace
 
-## change hostname with `unshare` command
+## implement in bash
 `unshare -u` uses a new UTS space by unsharing from its parent. 
  We then run `hostname cool-container`  to set the hostname inside the new UTS namespace only. 
 
 ```
-yongweiy@was-1:~$ hostname
-was-1
-yongweiy@was-1:~$ sudo unshare -u /bin/bash
-root@was-1:/home/yongweiy# hostname cool-container
-root@was-1:/home/yongweiy# hostname
+yongweiy@pg:~$ hostname
+pg
+yongweiy@pg:~$ sudo unshare -u /bin/bash
+root@pg:/home/yongweiy# hostname cool-container
+root@pg:/home/yongweiy# hostname
 cool-container
-root@was-1:/home/yongweiy# exit
+root@pg:/home/yongweiy# exit
 exit
-yongweiy@was-1:~$ hostname
-was-1
+yongweiy@pg:~$ hostname
+pg
 ```
 
-## change hostname in syscall
+## implement in syscall
 
 Please note the output from `readlink /proc/self/ns/uts` are different in host and container. These two bash processes are indeed running in different UTS namespaces.
 
 ```
-root@was-1:~# hostname
-was-1
-root@was-1:~# go run hostname.go run /bin/bash
+root@pg:~# hostname
+pg
+root@pg:~# go run hostname.go run /bin/bash
 Running [/bin/bash]
 Running [/bin/bash]
 root@cool-container:~# readlink /proc/self/ns/uts
@@ -32,8 +32,8 @@ uts:[4026532211]
 root@container:~# exit
 exit
 
-root@was-1:~# hostname
-was-1
-root@was-1:~# readlink /proc/self/ns/uts
+root@pg:~# hostname
+pg
+root@pg:~# readlink /proc/self/ns/uts
 uts:[4026531838]
 ```
